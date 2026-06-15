@@ -28,14 +28,29 @@ jobs:
       - name: Construir y subir imagen a ECR (Frontend)
         env:
           ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
-          ECR_REPOSITORY: innovatech-frontend # Asegúrate de que este nombre coincida con el que creaste en AWS
+          ECR_REPOSITORY: innovatech-frontend 
           IMAGE_TAG: latest
         run: |
-          # 1. Entramos a la carpeta del frontend
           cd front_despacho
-          
-          # 2. Construimos la imagen de Docker (Build)
           docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
-          
-          # 3. Subimos la imagen a AWS ECR (Push)
+          docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
+
+      - name: Construir y subir imagen a ECR (Backend Ventas)
+        env:
+          ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+          ECR_REPOSITORY: innovatech-backend-ventas
+          IMAGE_TAG: latest
+        run: |
+          cd back-Ventas_SpringBoot
+          docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
+          docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
+
+      - name: Construir y subir imagen a ECR (Backend Despachos)
+        env:
+          ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+          ECR_REPOSITORY: innovatech-backend-despachos
+          IMAGE_TAG: latest
+        run: |
+          cd back-Despachos_SpringBoot
+          docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
           docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
