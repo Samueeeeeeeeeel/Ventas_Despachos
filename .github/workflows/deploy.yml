@@ -23,7 +23,7 @@ jobs:
 
       - name: Iniciar sesión en Amazon ECR
         id: login-ecr
-        uses: aws-actions/amazon-ecr-login@v1
+        uses: aws-actions/amazon-ecr-login@v2
 
       - name: Construir y subir imagen a ECR (Frontend)
         env:
@@ -31,7 +31,7 @@ jobs:
           ECR_REPOSITORY: innovatech-frontend 
           IMAGE_TAG: latest
         run: |
-          cd Front_despacho
+          cd "proyecto semestral/front_despacho"
           docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
           docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
 
@@ -41,7 +41,7 @@ jobs:
           ECR_REPOSITORY: innovatech-backend-ventas
           IMAGE_TAG: latest
         run: |
-          cd back-Ventas_SpringBoot
+          cd "proyecto semestral/back-Ventas_SpringBoot"
           docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
           docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
 
@@ -51,6 +51,6 @@ jobs:
           ECR_REPOSITORY: innovatech-backend-despachos
           IMAGE_TAG: latest
         run: |
-          cd back-Despachos_SpringBoot
+          cd "proyecto semestral/back-Despachos_SpringBoot"
           docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
           docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
