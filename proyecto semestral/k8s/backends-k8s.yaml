@@ -1,0 +1,81 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: innovatech-backend-ventas
+  labels:
+    app: innovatech-backend-ventas
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: innovatech-backend-ventas
+  template:
+    metadata:
+      labels:
+        app: innovatech-backend-ventas
+    spec:
+      containers:
+      - name: backend-ventas
+        image: 003486653797.dkr.ecr.us-east-1.amazonaws.com/innovatech-backend-ventas:latest
+        ports:
+        - containerPort: 8080
+        resources:
+          requests:
+            cpu: "250m"
+            memory: "512Mi"
+          limits:
+            cpu: "500m"
+            memory: "1Gi"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: innovatech-backend-ventas-service
+spec:
+  type: ClusterIP 
+  ports:
+  - port: 8080
+    targetPort: 8080
+  selector:
+    app: innovatech-backend-ventas
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: innovatech-backend-despachos
+  labels:
+    app: innovatech-backend-despachos
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: innovatech-backend-despachos
+  template:
+    metadata:
+      labels:
+        app: innovatech-backend-despachos
+    spec:
+      containers:
+      - name: backend-despachos
+        image: 003486653797.dkr.ecr.us-east-1.amazonaws.com/innovatech-backend-despachos:latest
+        ports:
+        - containerPort: 8080
+        resources:
+          requests:
+            cpu: "250m"
+            memory: "512Mi"
+          limits:
+            cpu: "500m"
+            memory: "1Gi"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: innovatech-backend-despachos-service
+spec:
+  type: ClusterIP
+  ports:
+  - port: 8080
+    targetPort: 8080
+  selector:
+    app: innovatech-backend-despachos
