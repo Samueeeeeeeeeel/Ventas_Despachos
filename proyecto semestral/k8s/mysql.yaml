@@ -1,70 +1,38 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  annotations:
-    deployment.kubernetes.io/revision: "1"
-    kubectl.kubernetes.io/last-applied-configuration: |
-      {"apiVersion":"apps/v1","kind":"Deployment","metadata":{"annotations":{},"name":"mysql-db","namespace":"default"},"spec":{"replicas":1,"selector":{"matchLabels":{"app":"mysql-db"}},"template":{"metadata":{"labels":{"app":"mysql-db"}},"spec":{"containers":[{"env":[{"name":"MYSQL_ROOT_PASSWORD","value":"rootpassword"},{"name":"MYSQL_DATABASE","value":"innovatech_db"}],"image":"mysql:8.0","name":"mysql","ports":[{"containerPort":3306}]}]}}}}
-  creationTimestamp: "2026-06-17T03:53:55Z"
-  generation: 1
   name: mysql-db
-  namespace: default
-  resourceVersion: "310322"
-  uid: 9b339589-1cb8-456c-892d-dcc17e79edda
+  labels:
+    app: mysql-db
 spec:
-  progressDeadlineSeconds: 600
   replicas: 1
-  revisionHistoryLimit: 10
   selector:
     matchLabels:
       app: mysql-db
-  strategy:
-    rollingUpdate:
-      maxSurge: 25%
-      maxUnavailable: 25%
-    type: RollingUpdate
   template:
     metadata:
       labels:
         app: mysql-db
     spec:
       containers:
-      - env:
-        - name: MYSQL_ROOT_PASSWORD
-          value: rootpassword
-        - name: MYSQL_DATABASE
-          value: innovatech_db
+      - name: mysql
         image: mysql:8.0
-        imagePullPolicy: IfNotPresent
-        name: mysql
         ports:
         - containerPort: 3306
-          protocol: TCP
-        resources: {}
-        terminationMessagePath: /dev/termination-log
-        terminationMessagePolicy: File
-      dnsPolicy: ClusterFirst
-      restartPolicy: Always
-      schedulerName: default-scheduler
-      securityContext: {}
-      terminationGracePeriodSeconds: 30
-status:
-  availableReplicas: 1
-  conditions:
-  - lastTransitionTime: "2026-06-17T03:53:55Z"
-    lastUpdateTime: "2026-06-17T03:53:56Z"
-    message: ReplicaSet "mysql-db-76c776db96" has successfully progressed.
-    reason: NewReplicaSetAvailable
-    status: "True"
-    type: Progressing
-  - lastTransitionTime: "2026-06-17T04:14:14Z"
-    lastUpdateTime: "2026-06-17T04:14:14Z"
-    message: Deployment has minimum availability.
-    reason: MinimumReplicasAvailable
-    status: "True"
-    type: Available
-  observedGeneration: 1
-  readyReplicas: 1
-  replicas: 1
-  terminatingReplicas: 0
-  updatedReplicas: 1
+        env:
+        - name: MYSQL_ROOT_PASSWORD
+          value: "password123"
+        - name: MYSQL_DATABASE
+          value: "innovatech_db"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: mysql-service
+spec:
+  type: ClusterIP
+  ports:
+  - port: 3306
+    targetPort: 3306
+  selector:
+    app: mysql-db
