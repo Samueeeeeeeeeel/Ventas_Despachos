@@ -1,3 +1,4 @@
+# --- BACKEND VENTAS ---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -5,7 +6,7 @@ metadata:
   labels:
     app: innovatech-backend-ventas
 spec:
-  replicas: 2
+  replicas: 1
   selector:
     matchLabels:
       app: innovatech-backend-ventas
@@ -19,13 +20,13 @@ spec:
         image: 003486653797.dkr.ecr.us-east-1.amazonaws.com/innovatech-backend-ventas:latest
         ports:
         - containerPort: 8080
-        resources:
-          requests:
-            cpu: "250m"
-            memory: "512Mi"
-          limits:
-            cpu: "500m"
-            memory: "1Gi"
+        env:
+        - name: SPRING_DATASOURCE_URL
+          value: "jdbc:mysql://mysql-service:3306/innovatech_db?useSSL=false&allowPublicKeyRetrieval=true"
+        - name: SPRING_DATASOURCE_USERNAME
+          value: "root"
+        - name: SPRING_DATASOURCE_PASSWORD
+          value: "password123"
 ---
 apiVersion: v1
 kind: Service
@@ -39,6 +40,7 @@ spec:
   selector:
     app: innovatech-backend-ventas
 ---
+# --- BACKEND DESPACHOS ---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -46,7 +48,7 @@ metadata:
   labels:
     app: innovatech-backend-despachos
 spec:
-  replicas: 2
+  replicas: 1
   selector:
     matchLabels:
       app: innovatech-backend-despachos
@@ -60,13 +62,13 @@ spec:
         image: 003486653797.dkr.ecr.us-east-1.amazonaws.com/innovatech-backend-despachos:latest
         ports:
         - containerPort: 8080
-        resources:
-          requests:
-            cpu: "250m"
-            memory: "512Mi"
-          limits:
-            cpu: "500m"
-            memory: "1Gi"
+        env:
+        - name: SPRING_DATASOURCE_URL
+          value: "jdbc:mysql://mysql-service:3306/innovatech_db?useSSL=false&allowPublicKeyRetrieval=true"
+        - name: SPRING_DATASOURCE_USERNAME
+          value: "root"
+        - name: SPRING_DATASOURCE_PASSWORD
+          value: "password123"
 ---
 apiVersion: v1
 kind: Service
@@ -78,4 +80,4 @@ spec:
   - port: 8080
     targetPort: 8080
   selector:
-    app: innovatech-backend-despachos
+    app: innovatech-backend-despachos 

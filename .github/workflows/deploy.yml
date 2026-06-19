@@ -6,7 +6,7 @@ on:
       - main
 
 jobs:
-  build-and-push:
+  build-push-deploy:
     runs-on: ubuntu-latest
 
     steps:
@@ -25,32 +25,44 @@ jobs:
         id: login-ecr
         uses: aws-actions/amazon-ecr-login@v2
 
-      - name: Construir y subir imagen a ECR (Frontend)
+      # --- CONSTRUCCIÓN Y SUBIDA ---
+
+      - name: Construir y subir imagen (Frontend)
         env:
           ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
           ECR_REPOSITORY: innovatech-frontend 
-          IMAGE_TAG: latest
         run: |
           cd "proyecto semestral/front_despacho"
-          docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
-          docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
+          docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:latest .
+          docker push $ECR_REGISTRY/$ECR_REPOSITORY:latest
 
-      - name: Construir y subir imagen a ECR (Backend Ventas)
+      - name: Construir y subir imagen (Backend Ventas)
         env:
           ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
           ECR_REPOSITORY: innovatech-backend-ventas
-          IMAGE_TAG: latest
         run: |
           cd "proyecto semestral/back-Ventas_SpringBoot"
-          docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
-          docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
+          docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:latest .
+          docker push $ECR_REGISTRY/$ECR_REPOSITORY:latest
 
-      - name: Construir y subir imagen a ECR (Backend Despachos)
+      - name: Construir y subir imagen (Backend Despachos)
         env:
           ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
           ECR_REPOSITORY: innovatech-backend-despachos
-          IMAGE_TAG: latest
         run: |
           cd "proyecto semestral/back-Despachos_SpringBoot"
-          docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
-          docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
+          docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:latest .
+          docker push $ECR_REGISTRY/$ECR_REPOSITORY:latest
+
+      # --- DESPLIEGUE AUTOMÁTICO ---
+
+      - name: Actualizar configuración de kubeconfig
+        run: |
+          aws eks update-kubeconfig --name innovatech-cluster --region us-east-1
+
+      - name: Desplegar en Kubernetes
+        run: |
+          kubectl apply -f "proyecto semestral/k8s/"
+          kubectl rollout restart deployment/innovatech-frontend
+          kubectl rollout restart deployment/innovatech-backend-ventas
+          kubectl rollout restart deployment/innovatech-backend-despachos
